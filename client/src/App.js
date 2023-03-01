@@ -10,10 +10,15 @@ function App() {
   useEffect(() => {
     fetch('http://localhost:3030/jsonstore/todos')
       .then(res => res.json())
-      .then(data => 
-        setTodos(Object.values(data))
-        );
+      .then(data => {
+        const result = Object.keys(data).map(id => ({id, ...data[id]}));
+        setTodos(result);
+      });
   }, []);
+
+  const toggleTodoStatus = (id) => {
+    setTodos(state => state.map(t => t.id === id ? ({...t, isCompleted: !t.isCompleted}) : t));
+  };
 
   return (
     <div>
@@ -34,7 +39,7 @@ function App() {
 
             {/*} <Spinner /> */}
 
-            <Todos todos={todos} />
+            <Todos todos={todos} toggleTodoStatus={toggleTodoStatus} />
           </div>
         </section>
       </main>
