@@ -7,23 +7,25 @@ import Todos from "./components/Todos";
 
 function App() {
   const [todos, setTodos] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
     fetch('http://localhost:3030/jsonstore/todos')
       .then(res => res.json())
       .then(data => {
-        const result = Object.keys(data).map(id => ({id, ...data[id]}));
+        const result = Object.keys(data).map(id => ({ id, ...data[id] }));
         setTodos(result);
+        setIsLoading(false)
       });
   }, []);
 
   const toggleTodoStatus = (id) => {
-    setTodos(state => state.map(t => t.id === id ? ({...t, isCompleted: !t.isCompleted}) : t));
+    setTodos(state => state.map(t => t.id === id ? ({ ...t, isCompleted: !t.isCompleted }) : t));
   };
 
   const onTodoAdd = () => {
     const lastId = Number(todos[todos.length - 1].id);
     const text = prompt('Add new task:');
-    const newTask = {id: lastId + 1, text, isCompleted: false};
+    const newTask = { id: lastId + 1, text, isCompleted: false };
     setTodos(state => [...state, newTask]);
   };
 
@@ -33,8 +35,6 @@ function App() {
       <Header />
 
       <main className="main">
-
-
         <section className="todo-list-container">
           <h1>Todo List</h1>
 
@@ -44,9 +44,11 @@ function App() {
 
           <div className="table-wrapper">
 
-            {/*} <Spinner /> */}
+            {isLoading
+              ? <Spinner />
+              : <Todos todos={todos} toggleTodoStatus={toggleTodoStatus} />
+            }
 
-            <Todos todos={todos} toggleTodoStatus={toggleTodoStatus} />
           </div>
         </section>
       </main>
